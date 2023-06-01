@@ -147,26 +147,6 @@ func UpdateForm(formResponses []FormResponse, sheetsService *sheets.Service) {
 		response.Attendance = netIDAttendanceCount[response.NetID]
 		attendance := float64(response.Attendance)
 
-		requests = append(requests, &sheets.Request{
-			UpdateCells: &sheets.UpdateCellsRequest{
-				Start: &sheets.GridCoordinate{
-					SheetId:     SpreadSheetGID, // Your sheet ID
-					RowIndex:    response.RowIndex + 1,
-					ColumnIndex: 4, // Column E
-				},
-				Rows: []*sheets.RowData{
-					{
-						Values: []*sheets.CellData{
-							{
-								UserEnteredValue: &sheets.ExtendedValue{NumberValue: &attendance},
-							},
-						},
-					},
-				},
-				Fields: "*",
-			},
-		})
-
 		currentDate := time.Now().Format(DateFormat)
 
 		requests = append(requests, &sheets.Request{
@@ -181,6 +161,26 @@ func UpdateForm(formResponses []FormResponse, sheetsService *sheets.Service) {
 						Values: []*sheets.CellData{
 							{
 								UserEnteredValue: &sheets.ExtendedValue{StringValue: &currentDate},
+							},
+						},
+					},
+				},
+				Fields: "*",
+			},
+		})
+
+		requests = append(requests, &sheets.Request{
+			UpdateCells: &sheets.UpdateCellsRequest{
+				Start: &sheets.GridCoordinate{
+					SheetId:     SpreadSheetGID, // Your sheet ID
+					RowIndex:    response.RowIndex + 1,
+					ColumnIndex: 4, // Column E
+				},
+				Rows: []*sheets.RowData{
+					{
+						Values: []*sheets.CellData{
+							{
+								UserEnteredValue: &sheets.ExtendedValue{NumberValue: &attendance},
 							},
 						},
 					},
