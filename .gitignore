@@ -19,3 +19,6 @@
 
 # Go workspace file
 go.work
+
+sheets-api-key.json
+discord-token.txt
