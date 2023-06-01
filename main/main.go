@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-const DateFormat = "1/02/2006 15:04:05"
+const DateFormat = "1/2/2006 15:04:05"
 
 const Role = "1113654375135584296"
 
@@ -23,7 +23,6 @@ const ResponseRange = "A2:F"
 
 // SpreadSheetID https://docs.google.com/spreadsheets/d/10SAgHoWG5hbwESDMLvuDGANOWK3f-b5VoQ-Y-XQh5jg/edit?resourcekey#gid=590955473
 const SpreadSheetID = "10SAgHoWG5hbwESDMLvuDGANOWK3f-b5VoQ-Y-XQh5jg"
-
 const SpreadSheetGID = 590955473
 
 type FormResponse struct {
@@ -141,7 +140,7 @@ func UpdateForm(formResponses []FormResponse, sheetsService *sheets.Service) {
 	for _, response := range formResponses {
 
 		newAttendance, ok := netIDAttendanceCount[response.NetID]
-		if !ok || (response.Attendance == newAttendance && response.Attendance != 1) {
+		if !ok || response.Attendance == newAttendance {
 			continue
 		}
 
@@ -221,6 +220,7 @@ func GetResponses(sheetsService *sheets.Service) []FormResponse {
 	if err != nil {
 		log.Fatalf("Unable to retrieve data from sheet: %v", err)
 	}
+
 	if len(resp.Values) == 0 {
 		fmt.Println("No data found.")
 		return nil
@@ -229,19 +229,21 @@ func GetResponses(sheetsService *sheets.Service) []FormResponse {
 	responses := make([]FormResponse, 0, len(resp.Values))
 	for index, row := range resp.Values {
 
-		valuesString := strings.Builder{}
+		var values []string
+
 		for _, value := range row {
 
 			valueAsString, ok := value.(string)
-			if !ok || valueAsString == "" || valueAsString == " " {
+			if !ok || strings.TrimSpace(valueAsString) == "" {
 				continue
 			}
 
-			valuesString.WriteString(value.(string))
-			valuesString.WriteString("\n")
+			values = append(values, valueAsString)
 		}
 
-		values := strings.Split(valuesString.String(), "\n")
+		if len(values) == 0 {
+			continue
+		}
 
 		if len(values) < 5 {
 			fmt.Println("Unable to parse values:", row)
