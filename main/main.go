@@ -226,7 +226,7 @@ func GetResponses(sheetsService *sheets.Service) []FormResponse {
 		return nil
 	}
 
-	responses := make([]FormResponse, 0, len(resp.Values))
+	var responses []FormResponse
 	for index, row := range resp.Values {
 
 		var values []string
@@ -252,7 +252,7 @@ func GetResponses(sheetsService *sheets.Service) []FormResponse {
 
 		attendance := uint64(1)
 
-		if len(values) > 5 {
+		if len(values) >= 5 {
 			attendance, err = strconv.ParseUint(values[4], 10, 32)
 			if err != nil {
 				fmt.Println("Failed to parse attendance:", row, err)
